@@ -1,0 +1,8 @@
+node_modules
+*.y4m
+chromeData
+.DS_Store
+.env
+browserdata
+downloads
+dist
