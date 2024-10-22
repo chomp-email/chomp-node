@@ -47,11 +47,15 @@ export class Chomp {
 					break;
 				}
 				const json = await res.json();
-				if (res.status >= 200 && res.status < 300) {
-					if (json.length) {
+				if (
+					res.status >= 200 &&
+					res.status < 300 &&
+					Array.isArray(json.data)
+				) {
+					if (json.data.length) {
 						finished = true;
 						clearTimeout(timeout);
-						resolve(json[0]);
+						resolve(json.data[0]);
 						break;
 					}
 				} else {
