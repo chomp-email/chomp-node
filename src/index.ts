@@ -5,13 +5,11 @@ import { WaitForOptions } from "./interfaces/wait-for-options.interface";
 export class Chomp {
 	private baseUri = "https://api.chomp.email";
 	private apiKey: string;
-	private namespace: string;
 	private defaultTimeoutSeconds: number = 180;
 	private pollIntervalSeconds: number = 10;
 
 	public constructor(options: InitOptions) {
 		this.apiKey = options.apiKey;
-		this.namespace = options.namespace;
 	}
 
 	public async waitFor(options: WaitForOptions): Promise<Email> {
@@ -31,7 +29,7 @@ export class Chomp {
 				let res;
 				try {
 					res = await fetch(
-						`${this.baseUri}/emails?namespace=${this.namespace}&tag=${options.tag}&since=${since}&attempt=${attempt}&order=asc&limit=1`,
+						`${this.baseUri}/emails?tag=${options.tag}&since=${since}&attempt=${attempt}&order=asc&limit=1`,
 						{
 							headers: {
 								Authorization: `Bearer ${this.apiKey}`,
