@@ -9,7 +9,7 @@ Install this package using `npm i chomp-email`.
 Import Chomp and configure with your API key and namespace.
 
 ```typescript
-import { Chomp } from 'chomp-email';
+import Chomp from 'chomp-email';
 
 const chomp = new Chomp({
   apiKey: 'YOUR_API_KEY',
