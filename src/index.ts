@@ -2,7 +2,7 @@ import { Email } from "./interfaces/email.interface";
 import { InitOptions } from "./interfaces/init-options.interface";
 import { WaitForOptions } from "./interfaces/wait-for-options.interface";
 
-export class Chomp {
+export default class Chomp {
 	private baseUri = "https://api.chomp.email";
 	private apiKey: string;
 	private defaultTimeoutSeconds: number = 180;
