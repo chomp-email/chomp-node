@@ -1,5 +1,5 @@
 export interface Attachment {
 	filename: string;
-	content_type: string;
+	contentType: string;
 	size: number;
 }

@@ -1,3 +1,4 @@
+import { sleep } from "./functions.js";
 import { Email } from "./interfaces/email.interface";
 import { InitOptions } from "./interfaces/init-options.interface";
 import { WaitForOptions } from "./interfaces/wait-for-options.interface";
@@ -53,7 +54,24 @@ export default class Chomp {
 					if (json.data.length) {
 						finished = true;
 						clearTimeout(timeout);
-						resolve(json.data[0]);
+						const raw = json.data[0];
+						const email = {
+							id: raw.id,
+							date: raw.date,
+							tag: raw.tag,
+							from: raw.from,
+							subject: raw.subject,
+							attachments: raw.attachments.map((attachment) => {
+								return {
+									size: attachment.size,
+									filename: attachment.filename,
+									contentType: attachment.content_type,
+								};
+							}),
+							htmlBody: raw.html_body,
+							textBody: raw.text_body,
+						};
+						resolve(email);
 						break;
 					}
 				} else {
@@ -64,13 +82,9 @@ export default class Chomp {
 					});
 					break;
 				}
-				await this.sleep(this.pollIntervalSeconds * 1000);
+				await sleep(this.pollIntervalSeconds * 1000);
 				attempt++;
 			}
 		});
-	}
-
-	private async sleep(ms: number): Promise<void> {
-		return new Promise((r) => setTimeout(r, ms));
 	}
 }
