@@ -14,6 +14,7 @@ export default class Chomp {
 
 	public constructor(options: InitOptions) {
 		this.apiKey = options.apiKey;
+		this.debug = !!options.debug;
 	}
 
 	public async waitFor(options: WaitForOptions): Promise<Email> {
@@ -25,7 +26,7 @@ export default class Chomp {
 			const timeout = setTimeout(() => {
 				finished = true;
 				reject({
-					error: `Timeout exceeded (${timeoutMs}ms)`,
+					message: `Timeout exceeded (${timeoutMs}ms)`,
 				});
 			}, timeoutMs);
 			let attempt = 1;
@@ -43,7 +44,7 @@ export default class Chomp {
 					finished = true;
 					clearTimeout(timeout);
 					reject({
-						error: "Unknown error",
+						message: "Unknown error",
 					});
 					break;
 				}
@@ -61,7 +62,7 @@ export default class Chomp {
 						break;
 					} else {
 						this.debugMessage(
-							`Status code ${res.status}, nut no results`
+							`Status code ${res.status}, but no results`
 						);
 					}
 				} else {
@@ -69,7 +70,7 @@ export default class Chomp {
 					finished = true;
 					clearTimeout(timeout);
 					reject({
-						error: json.error || json.message,
+						message: json.message || "Unknown error",
 					});
 					break;
 				}

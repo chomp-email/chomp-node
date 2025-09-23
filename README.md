@@ -13,7 +13,6 @@ import Chomp from 'chomp-email';
 
 const chomp = new Chomp({
   apiKey: 'YOUR_API_KEY',
-  namespace: 'demo'
 });
 ```
 
@@ -22,10 +21,15 @@ const chomp = new Chomp({
 Start waiting for an email using the `waitFor()` method, like so.
 
 ```typescript
-const email = await chomp.waitFor({
-  tag: "my_tag",
-});
-console.log(email);
+try {
+  const email = await chomp.waitFor({
+    tag: "YOUR_TAG",
+  });
+  console.log(email);
+} catch (e) {
+  console.log(e.message);
+}
+
 ```
 
-Send an email to `demo+my_tag@send.chomp.email` and after a few seconds the method will return the email information.
+Send an email to `demo+YOUR_TAG@send.chomp.email` and after a few seconds the method will return the email information.
