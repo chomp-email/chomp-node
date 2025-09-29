@@ -4,6 +4,7 @@ import { InitOptions } from "./interfaces/init-options.interface";
 import { Link } from "./interfaces/link.interface.js";
 import { Image } from "./interfaces/image.interface.js";
 import { WaitForOptions } from "./interfaces/wait-for-options.interface";
+import { createRequire } from "node:module";
 
 export default class Chomp {
 	private baseUri = "https://api.chomp.email";
@@ -18,6 +19,8 @@ export default class Chomp {
 	}
 
 	public async waitFor(options: WaitForOptions): Promise<Email> {
+		const require = createRequire(import.meta.url);
+		const { version } = require("../package.json");
 		return new Promise(async (resolve, reject) => {
 			let finished = false;
 			const since = options.since || Math.floor(Date.now() / 1000);
@@ -38,6 +41,7 @@ export default class Chomp {
 					res = await fetch(url, {
 						headers: {
 							Authorization: `Bearer ${this.apiKey}`,
+							"X-Sdk-Version": version,
 						},
 					});
 				} catch (e) {
