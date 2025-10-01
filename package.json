@@ -1,6 +1,6 @@
 {
 	"name": "chomp-email",
-	"version": "1.0.7",
+	"version": "1.0.8",
 	"description": "Chomp",
 	"type": "module",
 	"main": "dist/index.js",

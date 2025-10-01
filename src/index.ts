@@ -1,10 +1,9 @@
 import { sleep } from "./functions.js";
-import { Email, RawEmail } from "./interfaces/email.interface";
+import { RawEmail } from "./interfaces/email.interface";
 import { InitOptions } from "./interfaces/init-options.interface";
-import { Link } from "./interfaces/link.interface.js";
-import { Image } from "./interfaces/image.interface.js";
 import { WaitForOptions } from "./interfaces/wait-for-options.interface";
 import { createRequire } from "node:module";
+import { Email } from "./classes/email.class.js";
 
 export default class Chomp {
 	private baseUri = "https://api.chomp.email";
@@ -62,7 +61,7 @@ export default class Chomp {
 						finished = true;
 						clearTimeout(timeout);
 						const rawEmail = json.data[0] as RawEmail;
-						resolve(this.parseResponse(rawEmail));
+						resolve(new Email(rawEmail));
 						break;
 					} else {
 						this.debugMessage(
@@ -82,58 +81,6 @@ export default class Chomp {
 				attempt++;
 			}
 		});
-	}
-
-	private parseResponse(rawEmail: RawEmail): Email {
-		const email = {
-			id: rawEmail.id,
-			date: rawEmail.date,
-			tag: rawEmail.tag,
-			from: rawEmail.from,
-			subject: rawEmail.subject,
-			links: this.extractLinks(rawEmail.html_body),
-			images: this.extractImages(rawEmail.html_body),
-			attachments: rawEmail.attachments.map((attachment) => {
-				return {
-					size: attachment.size,
-					filename: attachment.filename,
-					contentType: attachment.content_type,
-				};
-			}),
-			htmlBody: rawEmail.html_body,
-			textBody: rawEmail.text_body,
-		};
-
-		return email;
-	}
-
-	private extractLinks(html: string): Link[] {
-		const regex = /<a\s[^>]*href=["']([^"']+)["'][^>]*>(.*?)<\/a>/gi;
-		const links: Link[] = [];
-		let match;
-
-		while ((match = regex.exec(html)) !== null) {
-			links.push({
-				href: match[1],
-				text: match[2].replace(/<[^>]+>/g, "").trim(),
-			});
-		}
-
-		return links;
-	}
-
-	private extractImages(html: string): Image[] {
-		const regex = /<img[^>]+src=["']([^"']+)["'][^>]*>/gi;
-		const images: Image[] = [];
-		let match;
-
-		while ((match = regex.exec(html)) !== null) {
-			images.push({
-				src: match[1],
-			});
-		}
-
-		return images;
 	}
 
 	private debugMessage(message: string): void {
