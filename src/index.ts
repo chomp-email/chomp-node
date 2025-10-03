@@ -11,15 +11,38 @@ export default class Chomp {
 	private defaultTimeoutSeconds: number = 180;
 	private pollIntervalSeconds: number = 10;
 	private debug: boolean = false;
+	private version: string;
 
 	public constructor(options: InitOptions) {
 		this.apiKey = options.apiKey;
 		this.debug = !!options.debug;
+		const require = createRequire(import.meta.url);
+		const { version } = require("../package.json");
+		this.version = version;
+	}
+
+	public setBaseUri(uri: string): void {
+		this.baseUri = uri;
+	}
+
+	public async getEmailById(id: number): Promise<Email> {
+		let res;
+		try {
+			const url = `${this.baseUri}/emails/${id}`;
+			res = await this.get(url);
+		} catch (e) {
+			throw new Error();
+		}
+		const json = await res.json();
+		if (res.status >= 200 && res.status < 300) {
+			const email = new Email(json);
+			return email;
+		} else {
+			throw new Error("Not found");
+		}
 	}
 
 	public async waitFor(options: WaitForOptions): Promise<Email> {
-		const require = createRequire(import.meta.url);
-		const { version } = require("../package.json");
 		return new Promise(async (resolve, reject) => {
 			let finished = false;
 			const since = options.since || Math.floor(Date.now() / 1000);
@@ -36,13 +59,7 @@ export default class Chomp {
 				let res;
 				try {
 					const url = `${this.baseUri}/emails?tag=${options.tag}&since=${since}&attempt=${attempt}&order=asc&limit=1`;
-					this.debugMessage(`Fetching ${url}`);
-					res = await fetch(url, {
-						headers: {
-							Authorization: `Bearer ${this.apiKey}`,
-							"X-Sdk-Version": version,
-						},
-					});
+					res = await this.get(url);
 				} catch (e) {
 					finished = true;
 					clearTimeout(timeout);
@@ -80,6 +97,16 @@ export default class Chomp {
 				await sleep(this.pollIntervalSeconds * 1000);
 				attempt++;
 			}
+		});
+	}
+
+	private get(url): Promise<Response> {
+		this.debugMessage(`GET ${url}`);
+		return fetch(url, {
+			headers: {
+				Authorization: `Bearer ${this.apiKey}`,
+				"X-Sdk-Version": this.version,
+			},
 		});
 	}
 
