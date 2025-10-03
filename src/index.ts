@@ -16,13 +16,12 @@ export default class Chomp {
 	public constructor(options: InitOptions) {
 		this.apiKey = options.apiKey;
 		this.debug = !!options.debug;
+		if (options.baseUri) {
+			this.baseUri = options.baseUri;
+		}
 		const require = createRequire(import.meta.url);
 		const { version } = require("../package.json");
 		this.version = version;
-	}
-
-	public setBaseUri(uri: string): void {
-		this.baseUri = uri;
 	}
 
 	public async getEmailById(id: number): Promise<Email> {
